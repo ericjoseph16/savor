@@ -4,10 +4,11 @@ export type User = {
   userId: string;
   name: string;
   email: string;
-  crByNm: string; //Created By Name
-  crDtTm: string; //Created By Date Time
-  upBy: string;   //Updated By
-  upByNm: string; //Updated By Name
-  upDtTm: string; //Updated By Date Time
-  et: string;     //Entity Type
+  createdById: string; //Created By Id
+  createdByName: string; //Created By Name
+  createdDtTm: string; //Created By Date Time  
+  updatedById: string; //Updated By Name
+  updatedByName: string; //Updated By Id
+  updatedDtTm: string; //Updated By Date Time
+  entityType: string;     //Entity Type
 }
