@@ -69,3 +69,23 @@ export interface UserData {
   email: string;      
   role: UserRole;        
 }
+
+export interface Nutrition {
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  fiber: number;
+  sugar: number;
+  sodium: number;
+}
+
+export interface MealData {
+  name: string;
+  description: string;
+  ingredients: string[];
+  prepTimeMins: number;
+  type: MealType;
+  status: Status;
+  source: MealSource;
+}
