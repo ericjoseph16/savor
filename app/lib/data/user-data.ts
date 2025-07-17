@@ -1,5 +1,5 @@
-import { User } from "../models/entity-objects";
-import { Author, UserData } from "../models/helper-objects";
+import { User, UserFoodPreference } from "../models/entity-objects";
+import { Author, FoodPreference, MealData, UserData } from "../models/helper-objects";
 import { dynamoDB } from "./dynamo-db";
 import KSUID from 'ksuid';
 
@@ -59,5 +59,53 @@ export async function createUser(userData: UserData, author: Author): Promise<St
     }
   }
   // UserData or Author not provided
+  return undefined;
+}
+
+export async function createUserFoodPreferences(author: Author, preference: FoodPreference, mealId: string, mealData: MealData): Promise<String | undefined> {
+  // If valid user, mealId, and preference provided
+  if (author && mealId && preference && mealData) {
+    // Create date & time
+    const currentDtTm = new Date().toISOString();
+    // Create food preference id
+    const foodPreferenceId = KSUID.randomSync().string;
+
+    const pk = `U#${author.id}`;
+    const sk = `UFP#${foodPreferenceId}`;
+
+    const gsi1pk = `M#${mealId}`;
+    const gsi1sk = `U#${author.id}#UFP#${preference}#${foodPreferenceId}`;
+    
+    const userFoodPreferences: UserFoodPreference = {
+      PK: pk,
+      SK: sk,
+      GSI1PK: gsi1pk,
+      GSI1SK: gsi1sk,
+      userId: author.id,
+      userFoodPreferenceId: foodPreferenceId,
+      mealId: mealId,
+      foodName: mealData.name,
+      preference: preference,
+      crById: author.id,
+      crByName: author.name,
+      crDtTm: currentDtTm,
+      updById: author.id,
+      updByName: author.name,
+      updDtTm: currentDtTm,
+      entityType: "UFP"
+    }
+    try {
+      await dynamoDB.put({
+        TableName: process.env.TABLE_NAME,
+        Item: userFoodPreferences,
+        ConditionExpression: 'attribute_not_exists(PK)'
+      }); 
+      // Return new user that was just inserted
+      return foodPreferenceId;
+    } catch (error) {
+      console.error(`Error creating preference: ${mealData.name}, ${preference}`, error);
+      return undefined;      
+    }
+  }
   return undefined;
 }

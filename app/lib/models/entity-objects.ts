@@ -1,4 +1,4 @@
-import { UserRole, FoodPreference} from "./helper-objects";
+import { UserRole, FoodPreference, Nutrition, Status, MealType, MealSource} from "./helper-objects";
 
 /**
  * User entity
@@ -47,5 +47,32 @@ export type UserFoodPreference = {
   updById: string;
   updByName: string;
   updDtTm: string;
+  entityType: string;
+}
+
+// Meal Entity
+export type Meal = {
+  PK: string;
+  SK: string;
+  GSI1PK: string;
+  GSI1SK: string;
+  // GSI2PK: string;
+  // GSI2SK: string;
+  // GSI3PK: string;
+  // GSI3SK: string;
+  mealId: string;
+  name: string;
+  ingredients: string[];
+  nutrition: Nutrition;
+  prepTimeMins: Number;
+  status: Status;
+  mealType: MealType;
+  crById: string;
+  crByName: string;
+  crDtTm: string;
+  updById: string;
+  updByName: string;
+  updDtTm: string;
+  source: MealSource;
   entityType: string;
 }
