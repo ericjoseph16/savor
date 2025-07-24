@@ -14,6 +14,9 @@ importers:
       '@aws-sdk/lib-dynamodb':
         specifier: ^3.830.0
         version: 3.830.0(@aws-sdk/client-dynamodb@3.830.0)
+      '@aws-sdk/util-dynamodb':
+        specifier: ^3.848.0
+        version: 3.848.0(@aws-sdk/client-dynamodb@3.830.0)
       ksuid:
         specifier: ^3.0.0
         version: 3.0.0
@@ -160,6 +163,12 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       '@aws-sdk/client-dynamodb': ^3.830.0
+
+  '@aws-sdk/util-dynamodb@3.848.0':
+    resolution: {integrity: sha512-sitaCOtYLFF6L6+cpAxBho/Zr246Qdr78yIvBznqpEvqmBE1UYEH8SQ1NRvmw79p9XKmhHELKWO7mCQk+20sFQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@aws-sdk/client-dynamodb': ^3.848.0
 
   '@aws-sdk/util-endpoints@3.828.0':
     resolution: {integrity: sha512-RvKch111SblqdkPzg3oCIdlGxlQs+k+P7Etory9FmxPHyPDvsP1j1c74PmgYqtzzMWmoXTjd+c9naUHh9xG8xg==}
@@ -1277,6 +1286,11 @@ snapshots:
       tslib: 2.8.1
 
   '@aws-sdk/util-dynamodb@3.830.0(@aws-sdk/client-dynamodb@3.830.0)':
+    dependencies:
+      '@aws-sdk/client-dynamodb': 3.830.0
+      tslib: 2.8.1
+
+  '@aws-sdk/util-dynamodb@3.848.0(@aws-sdk/client-dynamodb@3.830.0)':
     dependencies:
       '@aws-sdk/client-dynamodb': 3.830.0
       tslib: 2.8.1
