@@ -1,5 +1,5 @@
 import { User, UserFoodPreference } from "../models/entity-objects";
-import { Author, FoodPreference, MealData, UserData } from "../models/helper-objects";
+import { Author, FoodPreference, MealData, PreferenceData, UserData } from "../models/helper-objects";
 import { dynamoDB } from "./dynamo-db";
 import KSUID from 'ksuid';
 
@@ -62,9 +62,9 @@ export async function createUser(userData: UserData, author: Author): Promise<St
   return undefined;
 }
 
-export async function createUserFoodPreferences(author: Author, preference: FoodPreference, mealId: string, mealData: MealData): Promise<String | undefined> {
+export async function createUserFoodPreferences(author: Author, data: PreferenceData): Promise<String | undefined> {
   // If valid user, mealId, and preference provided
-  if (author && mealId && preference && mealData) {
+  if (author && data) {
     // Create date & time
     const currentDtTm = new Date().toISOString();
     // Create food preference id
@@ -73,19 +73,23 @@ export async function createUserFoodPreferences(author: Author, preference: Food
     const pk = `U#${author.id}`;
     const sk = `UFP#${foodPreferenceId}`;
 
-    const gsi1pk = `M#${mealId}`;
-    const gsi1sk = `U#${author.id}#UFP#${preference}#${foodPreferenceId}`;
+    const gsi1pk = `M#${data.mealData.id}`;
+    const gsi1sk = `U#${author.id}#UFP#${data.preference}#${foodPreferenceId}`;
     
     const userFoodPreferences: UserFoodPreference = {
       PK: pk,
       SK: sk,
       GSI1PK: gsi1pk,
       GSI1SK: gsi1sk,
+      // GSI2PK:
+      // GSI2SK:
+      // GSI3PK:
+      // GSI3SK:
       userId: author.id,
       userFoodPreferenceId: foodPreferenceId,
-      mealId: mealId,
-      foodName: mealData.name,
-      preference: preference,
+      mealId: data.mealData.id,
+      foodName: data.mealData.name,
+      preference: data.preference,
       crById: author.id,
       crByName: author.name,
       crDtTm: currentDtTm,
@@ -100,10 +104,10 @@ export async function createUserFoodPreferences(author: Author, preference: Food
         Item: userFoodPreferences,
         ConditionExpression: 'attribute_not_exists(PK)'
       }); 
-      // Return new user that was just inserted
+      // Return new preference that was just inserted
       return foodPreferenceId;
     } catch (error) {
-      console.error(`Error creating preference: ${mealData.name}, ${preference}`, error);
+      console.error(`Error creating preference: ${data.mealData.name}, ${data.preference}`, error);
       return undefined;      
     }
   }
