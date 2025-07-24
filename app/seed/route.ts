@@ -1,4 +1,5 @@
 import { createUser } from "../lib/data/user-data";
+import { createMeal } from "../lib/data/meal-data";
 import { Author } from "../lib/models/helper-objects";
 import { seedData } from "./data";
 import { SeedData } from "./definitions";
@@ -17,7 +18,8 @@ export async function GET() {
   try {    
     // Seed users from data file
     await seedUsers(seedData);
-    return Response.json({ message: `Users seeded successfully!` });
+    await seedMeals(seedData);
+    return Response.json({ message: `Users  and Meals seeded successfully!` });
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }  
@@ -32,6 +34,19 @@ async function seedUsers(seedData: SeedData) {
     seedData.userList.map(async (userData) => {    
       const newUserKey = await createUser(userData, systemAuthor);
       console.log(`New user added: ${newUserKey}`);
+    });
+  }
+}
+
+/**
+ * Seed meals
+ * @param seedData 
+ */
+async function seedMeals(seedData: SeedData) {
+  if(seedData.mealList) {
+    seedData.mealList.map(async (mealData) => {    
+      const newMealKey = await createMeal(mealData, systemAuthor);
+      console.log(`New meal added: ${newMealKey}`);
     });
   }
 }

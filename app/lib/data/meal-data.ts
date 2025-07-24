@@ -1,9 +1,12 @@
+import { unmarshallOutput } from "@aws-sdk/lib-dynamodb/dist-types/commands/utils";
 import { Meal } from "../models/entity-objects";
 import { MealData, Author, UserGoal, Nutrition } from "../models/helper-objects";
 import { dynamoDB } from "./dynamo-db";
+import { QueryCommand } from "@aws-sdk/client-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import KSUID from 'ksuid';
 
-export async function createMeal(data: MealData, author: Author, nutrition: Nutrition): Promise<String | undefined> {
+export async function createMeal(data: MealData, author: Author): Promise<String | undefined> {
     if (author && data) {
         const mealId = KSUID.randomSync().string;
 
@@ -15,25 +18,30 @@ export async function createMeal(data: MealData, author: Author, nutrition: Nutr
         const gsi1pk = `U#${author.id}`;
         const gsi1sk = `M#${mealId}`;
 
-        // const gsi2pk = `UG#${UserGoal}`;
-        // const gsi2sk = `M#${mealId}`;
+        const gsi2pk = `UG#${UserGoal}`;
+        const gsi2sk = `M#${mealId}`;
 
-        // const gsi3pk = 
-        // const gsi3sk = mealId;
+        const gsi3pk = `UFM#U#${author.id}`;
+        const gsi3sk = `M#${mealId}`;
+
+        const gsi4pk = `MNAME#${data.name}`
+        const gsi4sk = `M#${mealId}`;
 
         const meal: Meal = {
             PK: pk,
             SK: sk,
             GSI1PK: gsi1pk,
             GSI1SK: gsi1sk,
-            // GSI2PK: gsi2pk,
-            // GSI2SK: gsi2sk,
-            // GSI3PK:
-            // GSI3SK:
+            GSI2PK: gsi2pk,
+            GSI2SK: gsi2sk,
+            GSI3PK: gsi3pk,
+            GSI3SK: gsi3sk,
+            GSI4PK: gsi4pk,
+            GSI4SK: gsi4sk,
             mealId: mealId,
-            name: data.name,
+            name: data.name.toLowerCase(),
             ingredients: data.ingredients,
-            nutrition: nutrition,
+            nutrition: data.nutrition,
             prepTimeMins: data.prepTimeMins,
             status: data.status,
             mealType: data.type,
@@ -61,4 +69,39 @@ export async function createMeal(data: MealData, author: Author, nutrition: Nutr
           }
     }
     return undefined;
+}
+
+export async function getMealIdByName(data: MealData): Promise<String | undefined> {
+  if (data) {
+    // name of meal
+    const nameKey = data.name.toLowerCase();
+  
+    try {
+      const result = await dynamoDB.send(new QueryCommand({
+        TableName: process.env.TABLE_NAME,
+        // using 4th GSI
+        IndexName: "GSI4",
+        // querying the table where GSI4 is pk
+        KeyConditionExpression: "GSI4PK = :pk",
+        ExpressionAttributeValues: {
+          // nameKey is a String Value (S)
+          ":pk": { S: nameKey }
+        },
+        // we only return 1 mealIdByName
+        Limit: 1
+      }));
+      // if result exists and has items, then convert it to a usable item, 
+      // and get the first item (should only be one) and return it
+      if (result.Items && result.Items.length > 0) {
+        const item = unmarshall(result.Items[0]);
+        return item.mealId;
+      }
+    }
+    catch (error) {
+      console.error(`Error querying meal by name: ${nameKey}`, error);
+    }
+    return undefined;
+  }
+
+  return undefined;
 }

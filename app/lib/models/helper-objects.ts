@@ -16,6 +16,14 @@ export enum FoodPreference {
 }
 
 /**
+ * Favorite a Meal
+ */
+export enum Favorite {
+  FAVORITED = 'Favorited',
+  NOT_FAVORITED = 'Not Favorited',
+}
+
+/**
  * User Goal
  */
 export enum UserGoal { 
@@ -84,8 +92,22 @@ export interface MealData {
   name: string;
   description: string;
   ingredients: string[];
+  nutrition: Nutrition;
+  isFavorite: Favorite;
   prepTimeMins: number;
   type: MealType;
   status: Status;
   source: MealSource;
+}
+
+export interface MealPreview {
+  name: string;
+  description: string;
+  ingredients: string[];
+  id: string,
+}
+
+export interface PreferenceData {
+  mealData: MealPreview,
+  preference: FoodPreference,
 }
