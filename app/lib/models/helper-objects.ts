@@ -91,6 +91,7 @@ export interface Nutrition {
 export interface MealData {
   name: string;
   description: string;
+  tags: string[];
   ingredients: string[];
   nutrition: Nutrition;
   isFavorite: Favorite;

@@ -21,6 +21,7 @@ export const seedData: SeedData = {
       name: "Apple",
       description: "Red Fruit",
       ingredients: ["Apple"],
+      tags: ["Easy", "Natural", "Sweet"],
       nutrition: {
         calories: 50,
         protein: 0,

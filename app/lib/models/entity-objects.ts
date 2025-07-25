@@ -68,6 +68,8 @@ export type Meal = {
   GSI4SK: string;
   mealId: string;
   name: string;
+  description: string;
+  tags: string[];
   ingredients: string[];
   nutrition: Nutrition;
   prepTimeMins: Number;
@@ -80,5 +82,22 @@ export type Meal = {
   updByName: string;
   updDtTm: string;
   source: MealSource;
+  entityType: string;
+}
+
+export type MealTag = {
+  PK: string;
+  SK: string;
+  GSI1PK: string;
+  // GSI1SK: string;
+  // GSI2PK: string;
+  // GSI2SK: string;
+  // GSI3PK: string;
+  // GSI3SK: string;
+  // GSI4PK: string;
+  // GSI4SK: string;
+  mealId: string;
+  tag: string;
+  crDtTm: string;
   entityType: string;
 }
