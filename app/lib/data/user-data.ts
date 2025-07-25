@@ -1,5 +1,6 @@
 import { User, UserFoodPreference } from "../models/entity-objects";
 import { Author, FoodPreference, MealData, PreferenceData, UserData } from "../models/helper-objects";
+import { getMealIdByName } from "./meal-data";
 import { dynamoDB } from "./dynamo-db";
 import KSUID from 'ksuid';
 
@@ -8,7 +9,7 @@ import KSUID from 'ksuid';
  * @param userData 
  * @returns 
  */
-export async function createUser(userData: UserData, author: Author): Promise<String | undefined> {
+export async function createUser(userData: UserData, author: Author): Promise<string | undefined> {
   // If a valid user and author provided 
   if (userData && author) {    
     const userId = KSUID.randomSync().string;
@@ -31,7 +32,9 @@ export async function createUser(userData: UserData, author: Author): Promise<St
       GSI2PK: usernameKey,
       GSI2SK: usernameKey,
       GSI3PK: userRoleKey,
-      GSI3SK: usernameKey,  
+      GSI3SK: usernameKey,
+      // GSI4PK:
+      // GSI4SK:
       userId: userId,
       username: userData.username,
       name: userData.name,
@@ -62,7 +65,7 @@ export async function createUser(userData: UserData, author: Author): Promise<St
   return undefined;
 }
 
-export async function createUserFoodPreferences(author: Author, data: PreferenceData): Promise<String | undefined> {
+export async function createUserFoodPreference(data: PreferenceData, author: Author): Promise<string | undefined> {
   // If valid user, mealId, and preference provided
   if (author && data) {
     // Create date & time
@@ -70,10 +73,18 @@ export async function createUserFoodPreferences(author: Author, data: Preference
     // Create food preference id
     const foodPreferenceId = KSUID.randomSync().string;
 
+    const name = data.mealData.name.toLowerCase();
+    const mealId = await getMealIdByName(name);
+
+    if (!mealId) {
+      console.error(`Meal ID not found for name: ${name}`);
+      return undefined;
+    }
+
     const pk = `U#${author.id}`;
     const sk = `UFP#${foodPreferenceId}`;
 
-    const gsi1pk = `M#${data.mealData.id}`;
+    const gsi1pk = `M#${mealId}`;
     const gsi1sk = `U#${author.id}#UFP#${data.preference}#${foodPreferenceId}`;
     
     const userFoodPreferences: UserFoodPreference = {
@@ -85,10 +96,12 @@ export async function createUserFoodPreferences(author: Author, data: Preference
       // GSI2SK:
       // GSI3PK:
       // GSI3SK:
+      // GSI4PK:
+      // GSI4SK:
       userId: author.id,
       userFoodPreferenceId: foodPreferenceId,
-      mealId: data.mealData.id,
-      foodName: data.mealData.name,
+      mealId: mealId,
+      foodName: name,
       preference: data.preference,
       crById: author.id,
       crByName: author.name,
@@ -107,7 +120,7 @@ export async function createUserFoodPreferences(author: Author, data: Preference
       // Return new preference that was just inserted
       return foodPreferenceId;
     } catch (error) {
-      console.error(`Error creating preference: ${data.mealData.name}, ${data.preference}`, error);
+      console.error(`Error creating preference: ${name}, ${data.preference}`, error);
       return undefined;      
     }
   }

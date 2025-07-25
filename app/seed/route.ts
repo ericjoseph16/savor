@@ -1,4 +1,4 @@
-import { createUser } from "../lib/data/user-data";
+import { createUser, createUserFoodPreference } from "../lib/data/user-data";
 import { createMeal } from "../lib/data/meal-data";
 import { Author } from "../lib/models/helper-objects";
 import { seedData } from "./data";
@@ -16,10 +16,11 @@ const systemAuthor: Author = {
  */
 export async function GET() {
   try {    
-    // Seed users from data file
+    // Seed users, meals, and preferences from data file
     await seedUsers(seedData);
     await seedMeals(seedData);
-    return Response.json({ message: `Users  and Meals seeded successfully!` });
+    await seedPreferences(seedData);
+    return Response.json({ message: ` Users, Meals, and Preferences seeded successfully!` });
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }  
@@ -30,11 +31,11 @@ export async function GET() {
  * @param seedData 
  */
 async function seedUsers(seedData: SeedData) {
-  if(seedData.userList) {
-    seedData.userList.map(async (userData) => {    
+  if (seedData.userList) {
+    for (const userData of seedData.userList) {
       const newUserKey = await createUser(userData, systemAuthor);
       console.log(`New user added: ${newUserKey}`);
-    });
+    }
   }
 }
 
@@ -43,10 +44,23 @@ async function seedUsers(seedData: SeedData) {
  * @param seedData 
  */
 async function seedMeals(seedData: SeedData) {
-  if(seedData.mealList) {
-    seedData.mealList.map(async (mealData) => {    
+  if (seedData.mealList) {
+    for (const mealData of seedData.mealList) {
       const newMealKey = await createMeal(mealData, systemAuthor);
       console.log(`New meal added: ${newMealKey}`);
-    });
+    }
+  }
+}
+
+/**
+ * Seed preferences
+ * @param seedData 
+ */
+async function seedPreferences(seedData: SeedData) {
+  if (seedData.preferenceList) {
+    for (const preferenceData of seedData.preferenceList) {
+      const newPreferenceKey = await createUserFoodPreference(preferenceData, systemAuthor);
+      console.log(`New preference added: ${newPreferenceKey}`);
+    }
   }
 }

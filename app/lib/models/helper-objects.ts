@@ -104,7 +104,6 @@ export interface MealPreview {
   name: string;
   description: string;
   ingredients: string[];
-  id: string,
 }
 
 export interface PreferenceData {

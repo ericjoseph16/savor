@@ -37,15 +37,14 @@ export const seedData: SeedData = {
       source: MealSource.USER_GENERATED,
     },
   ],
-  // preferenceList: [
-  //   {
-  //     mealData: {
-  //       name: "Apple",
-  //       description: "Red Fruit",
-  //       ingredients: ["Apple"],
-  //       id: ,
-  //     },
-  //     preference: FoodPreference.LIKE,
-  //   }
-  // ]
+  preferenceList: [
+    {
+      mealData: {
+        name: "Apple",
+        description: "Red Fruit",
+        ingredients: ["Apple"],
+      },
+      preference: FoodPreference.LIKE,
+    }
+  ]
 }

@@ -12,6 +12,8 @@ export type User = {
   GSI2SK: string;
   GSI3PK: string;
   GSI3SK: string;  
+  // GSI4PK: string;
+  // GSI4SK: string;
   userId: string;
   username: string;
   name: string;

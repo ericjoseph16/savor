@@ -6,9 +6,11 @@ import { QueryCommand } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import KSUID from 'ksuid';
 
-export async function createMeal(data: MealData, author: Author): Promise<String | undefined> {
+export async function createMeal(data: MealData, author: Author): Promise<string | undefined> {
     if (author && data) {
         const mealId = KSUID.randomSync().string;
+
+        const mealName = data.name.toLowerCase()
 
         const currentDtTm = new Date().toISOString();
         
@@ -24,7 +26,7 @@ export async function createMeal(data: MealData, author: Author): Promise<String
         const gsi3pk = `UFM#U#${author.id}`;
         const gsi3sk = `M#${mealId}`;
 
-        const gsi4pk = `MNAME#${data.name}`
+        const gsi4pk = `MNAME#${mealName}`
         const gsi4sk = `M#${mealId}`;
 
         const meal: Meal = {
@@ -39,7 +41,7 @@ export async function createMeal(data: MealData, author: Author): Promise<String
             GSI4PK: gsi4pk,
             GSI4SK: gsi4sk,
             mealId: mealId,
-            name: data.name.toLowerCase(),
+            name: mealName,
             ingredients: data.ingredients,
             nutrition: data.nutrition,
             prepTimeMins: data.prepTimeMins,
@@ -71,10 +73,10 @@ export async function createMeal(data: MealData, author: Author): Promise<String
     return undefined;
 }
 
-export async function getMealIdByName(data: MealData): Promise<String | undefined> {
-  if (data) {
+export async function getMealIdByName(name: string): Promise<string | undefined> {
+  if (name) {
     // name of meal
-    const nameKey = data.name.toLowerCase();
+    const nameKey = `MNAME#${name.toLowerCase()}`;
   
     try {
       const result = await dynamoDB.send(new QueryCommand({
@@ -90,12 +92,17 @@ export async function getMealIdByName(data: MealData): Promise<String | undefine
         // we only return 1 mealIdByName
         Limit: 1
       }));
+      
+      //console.log("Raw DynamoDB result:", JSON.stringify(result, null, 2));
+      
       // if result exists and has items, then convert it to a usable item, 
       // and get the first item (should only be one) and return it
       if (result.Items && result.Items.length > 0) {
         const item = unmarshall(result.Items[0]);
+        //console.log("Unmarshalled item:", item);
         return item.mealId;
       }
+      //console.log("Skips if condition");
     }
     catch (error) {
       console.error(`Error querying meal by name: ${nameKey}`, error);
