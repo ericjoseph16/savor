@@ -37,6 +37,26 @@ export const seedData: SeedData = {
       status: Status.ACTIVE,
       source: MealSource.USER_GENERATED,
     },
+    {
+      name: "Apple Pie Slice",
+      description: "Fruit Pie",
+      ingredients: ["Apple, Flour, Sugar, Cinnamon"],
+      tags: ["Sweet", "Dessert"],
+      nutrition: {
+        calories: 300,
+        protein: 2,
+        carbohydrates: 10,
+        fat: 10,
+        fiber: 1,
+        sugar: 15,
+        sodium: 0,
+      },
+      prepTimeMins: 60,
+      isFavorite: Favorite.FAVORITED,
+      type: MealType.COMPOSITE,
+      status: Status.ACTIVE,
+      source: MealSource.USER_GENERATED,
+    },
   ],
   preferenceList: [
     {
